@@ -1,0 +1,70 @@
+# 알바 로그 (Alba Log) 개발 리포트 - 2025년 09월 22일
+
+## 1. 메인 화면 및 네비게이션 설정 (Jetpack Navigation Compose)
+
+### 1-1. 의존성 추가
+- `gradle/libs.versions.toml`: `navigationCompose = "2.7.7"` 버전 정의 및 라이브러리 (`androidx-navigation-compose`) 참조 추가.
+- `app/build.gradle.kts`: `implementation(libs.androidx.navigation.compose)` 의존성 추가.
+
+### 1-2. 화면 경로 정의 (`navigation/AppScreen.kt`)
+- 앱 내 화면 경로를 관리하기 위한 `AppScreen` sealed class 생성.
+  - `MainDashboard`, `SmartHandover`, `ExpirationDateManager`, `CentralizedNotice`, `ShiftSwapAssistant` 경로 정의.
+
+### 1-3. NavHost 설정 (`MainActivity.kt`)
+- 기존 수동 화면 전환 로직 제거.
+- `rememberNavController()`로 `NavHostController` 생성.
+- `NavHost`를 설정하고, `AppScreen.MainDashboard`를 시작 화면으로 지정.
+- 각 `AppScreen` 경로에 대한 `composable` 목적지 정의:
+  - `MainDashboardScreen` (신규 생성)
+  - `SmartHandoverScreen` (기존 화면 연결)
+  - 기타 기능 화면들을 위한 임시 `PlaceholderScreen`.
+
+### 1-4. 메인 대시보드 화면 생성 (`ui/MainDashboardScreen.kt`)
+- `MainDashboardScreen` Composable 함수 생성.
+- AGENT.md에 명시된 4가지 핵심 기능으로 이동하는 버튼 배치:
+  - 스마트 인수인계 (클릭 시 `AppScreen.SmartHandover`로 이동)
+  - 유통기한 관리자 (클릭 시 `AppScreen.ExpirationDateManager`로 이동)
+  - 중앙 공지 시스템 (클릭 시 `AppScreen.CentralizedNotice`로 이동)
+  - 근무 교대 도우미 (클릭 시 `AppScreen.ShiftSwapAssistant`로 이동)
+- `MainActivity`의 `NavHost`에서 `MainDashboardScreenPlaceholder`를 `MainDashboardScreen`으로 교체.
+
+### 1-5. 뒤로가기 동작 수정
+- `SmartHandoverScreen.kt`: `NavController`를 파라미터로 받도록 수정.
+- `MainActivity.kt`: `NavHost`에서 `SmartHandoverScreen` 호출 시 `navController` 인스턴스 전달.
+  - 이를 통해 `SmartHandoverScreen`에서 뒤로가기 시 앱이 종료되지 않고 `MainDashboardScreen`으로 돌아가도록 네비게이션 스택 관리.
+
+## 2. 스마트 인수인계 화면 기능 개선 (`smart_handover/`)
+
+### 2-1. 항목 삭제 기능
+- `SmartHandoverViewModel.kt`:
+  - `deleteItem(itemToDelete: HandoverItem)` 함수 추가 (리스트에서 해당 아이템 필터링).
+  - 초기 데이터 로드 시 ID 정렬 후 역순으로 표시하여 `addItem`과 일관성 유지.
+- `SmartHandoverScreen.kt`:
+  - `HandoverListItem` Composable에 `onDeleteItemClick: () -> Unit` 콜백 파라미터 추가.
+  - `HandoverListItem` 내부에 `IconButton` (삭제 아이콘) 추가, 클릭 시 `onDeleteItemClick` 호출.
+  - `SmartHandoverScreen`의 `LazyColumn`에서 `HandoverListItem` 호출 시 `onDeleteItemClick = { viewModel.deleteItem(item) }` 전달.
+  - Preview에도 로컬 상태를 업데이트하는 삭제 로직 추가.
+
+### 2-2. "인수인계 완료" 버튼 기능
+- `SmartHandoverViewModel.kt`:
+  - `completeHandover()` 함수 추가 (현재는 인수인계 항목들의 상태를 로그로 출력. 추후 DB 저장 로직으로 확장 가능).
+- `SmartHandoverScreen.kt`:
+  - `LazyColumn` 또는 빈 목록 메시지 아래에 "인수인계 완료" `Button` 추가 (`fillMaxWidth`).
+  - 버튼 클릭 시 `viewModel.completeHandover()` 호출.
+  - 인수인계 항목이 있을 때만 버튼 활성화 (`enabled = uiState.handoverItems.isNotEmpty()`).
+  - Preview에도 버튼 및 유사 로직 추가.
+
+### 2-3. "인수인계 확인" 버튼 및 다이얼로그 기능
+- `SmartHandoverScreen.kt`:
+  - 다이얼로그 표시 여부를 위한 `showConfirmationDialog` (Boolean) 상태 변수 추가.
+  - "인수인계 완료" 버튼 아래에 "인수인계 확인" `Button` 추가 (`fillMaxWidth`).
+  - 버튼 클릭 시 `showConfirmationDialog = true`.
+  - 인수인계 항목이 있을 때만 버튼 활성화.
+  - `HandoverConfirmationDialog` Composable 함수 신규 생성:
+    - `AlertDialog`를 사용하여 인수인계 항목 목록을 표시.
+    - `title`: "인수인계 사항 확인".
+    - `text`: 항목이 없으면 안내 메시지, 있으면 `LazyColumn`으로 각 항목의 완료 여부(✅/⬜️)와 내용 표시.
+    - Dialog 내용이 길어질 경우를 대비해 `Box(modifier = Modifier.heightIn(max = screenHeight * 0.6f))`로 최대 높이 제한.
+    - `confirmButton`: "닫기" `TextButton` (클릭 시 다이얼로그 닫음).
+  - `SmartHandoverScreen`의 최하단에 `if (showConfirmationDialog)` 조건부로 `HandoverConfirmationDialog` 호출.
+  - Preview에도 다이얼로그 관련 상태 및 로직 추가.

@@ -4,13 +4,21 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.alba_log.navigation.AppScreen
+import com.example.alba_log.smart_handover.SmartHandoverScreen
+import com.example.alba_log.ui.MainDashboardScreen
 import com.example.alba_log.ui.theme.Alba_logTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,10 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Alba_logTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    AlbaLogNavigation(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -31,17 +36,44 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
+fun AlbaLogNavigation(modifier: Modifier = Modifier) {
+    val navController = rememberNavController()
+
+    NavHost(
+        navController = navController,
+        startDestination = AppScreen.MainDashboard.route,
         modifier = modifier
-    )
+    ) {
+        composable(AppScreen.MainDashboard.route) {
+            MainDashboardScreen(navController = navController)
+        }
+        composable(AppScreen.SmartHandover.route) {
+            SmartHandoverScreen(navController = navController) // navController 전달
+        }
+        composable(AppScreen.ExpirationDateManager.route) {
+            PlaceholderScreen("유통기한 관리자 화면")
+        }
+        composable(AppScreen.CentralizedNotice.route) {
+            PlaceholderScreen("중앙 공지 시스템 화면")
+        }
+        composable(AppScreen.ShiftSwapAssistant.route) {
+            PlaceholderScreen("근무 교대 도우미 화면")
+        }
+        // TODO: 스마트 인수인계 확인 화면 composable 추가 예정
+    }
+}
+
+@Composable
+fun PlaceholderScreen(title: String, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(text = title)
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun DefaultPreview() {
     Alba_logTheme {
-        Greeting("Android")
+        AlbaLogNavigation()
     }
 }
