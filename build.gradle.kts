@@ -3,5 +3,7 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
-    alias(libs.plugins.ksp) apply false // KSP 플러그인 선언 추가
+    alias(libs.plugins.ksp) apply false
+    // Google Services 플러그인 선언 추가
+    alias(libs.plugins.google.services) apply false
 }

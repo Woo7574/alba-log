@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "847247816191",
+    "project_id": "alba-log",
+    "storage_bucket": "alba-log.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:847247816191:android:91cf9187c86e175cf0e3ca",
+        "android_client_info": {
+          "package_name": "com.example.alba_log"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByoOZvY2w7DeywlYBMCjT1-9GdnEsa-WA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

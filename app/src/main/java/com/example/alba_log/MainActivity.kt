@@ -16,6 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.alba_log.expiration_date_manager.ExpirationDateManagerScreen // 추가
 import com.example.alba_log.navigation.AppScreen
 import com.example.alba_log.smart_handover.SmartHandoverScreen
 import com.example.alba_log.ui.MainDashboardScreen
@@ -48,10 +49,10 @@ fun AlbaLogNavigation(modifier: Modifier = Modifier) {
             MainDashboardScreen(navController = navController)
         }
         composable(AppScreen.SmartHandover.route) {
-            SmartHandoverScreen(navController = navController) // navController 전달
+            SmartHandoverScreen(navController = navController)
         }
         composable(AppScreen.ExpirationDateManager.route) {
-            PlaceholderScreen("유통기한 관리자 화면")
+            ExpirationDateManagerScreen(navController = navController) // 변경
         }
         composable(AppScreen.CentralizedNotice.route) {
             PlaceholderScreen("중앙 공지 시스템 화면")
@@ -59,7 +60,6 @@ fun AlbaLogNavigation(modifier: Modifier = Modifier) {
         composable(AppScreen.ShiftSwapAssistant.route) {
             PlaceholderScreen("근무 교대 도우미 화면")
         }
-        // TODO: 스마트 인수인계 확인 화면 composable 추가 예정
     }
 }
 
