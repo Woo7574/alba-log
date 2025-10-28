@@ -31,7 +31,7 @@
 
  | 메인 대시보드 | 인수인계 화면 |
  | :----------: | :----------: |
-|  | <img width="383" height="857" alt="image" src="https://github.com/user-attachments/assets/ef10df30-b51d-4a58-9abb-fa63a8ce3899" />
+ | <img width="383" height="857" alt="image" src="https://github.com/user-attachments/assets/ef10df30-b51d-4a58-9abb-fa63a8ce3899" />
  | <img width="381" height="855" alt="image" src="https://github.com/user-attachments/assets/69a9ba85-5ec1-4b9c-bdd3-f4b49ce8f534" />
  |
 
